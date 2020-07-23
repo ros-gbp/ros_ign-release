@@ -1,0 +1,13 @@
+Source: ros-noetic-ros-ign-gazebo-demos
+Section: misc
+Priority: optional
+Maintainer: Louise Poubel <louise@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libignition-gazebo3-dev, ros-noetic-catkin
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-noetic-ros-ign-gazebo-demos
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libignition-gazebo3-dev, ros-noetic-image-transport-plugins, ros-noetic-ros-ign-bridge, ros-noetic-ros-ign-gazebo, ros-noetic-ros-ign-image, ros-noetic-rqt-image-view, ros-noetic-rqt-plot, ros-noetic-rviz
+Replaces: ros-noetic-ros1-ign-gazebo-demos
+Description: Demos using Ignition Gazebo simulation with ROS.
