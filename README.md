@@ -1,97 +1,159 @@
-[![Build Status](https://travis-ci.org/ignitionrobotics/ros_ign.svg?branch=noetic)](https://travis-ci.org/ignitionrobotics/ros_ign/branches)
+# Bridge communication between ROS and Ignition Transport
 
-* ROS 1 branches:
-    * [melodic](https://github.com/osrf/ros_ign/tree/melodic)
-        * Blueprint and Citadel
-        * Melodic
-    * [noetic](https://github.com/osrf/ros_ign/tree/noetic)
-        * Citadel
-        * Noetic
-* ROS 2 branches:
-    * [dashing](https://github.com/osrf/ros_ign/tree/dashing)
-        * Blueprint and Citadel
-        * Dashing and Eloquent
-    * [ros2](https://github.com/osrf/ros_ign/tree/ros2)
-        * Citadel
-        * Foxy
+This package provides a network bridge which enables the exchange of messages
+between ROS and Ignition Transport.
 
-# Integration between ROS and Ignition
+The bridge is currently implemented in C++. At this point there's no support for
+service calls. Its support is limited to only the following message types:
 
-## Packages
+| ROS type                       | Ignition Transport type          |
+|--------------------------------|:--------------------------------:|
+| std_msgs/Bool                  | ignition::msgs::Boolean          |
+| std_msgs/Empty                 | ignition::msgs::Empty            |
+| std_msgs/Float32               | ignition::msgs::Float            |
+| std_msgs/Float64               | ignition::msgs::Double           |
+| std_msgs/Header                | ignition::msgs::Header           |
+| std_msgs/String                | ignition::msgs::StringMsg        |
+| geometry_msgs/Quaternion       | ignition::msgs::Quaternion       |
+| geometry_msgs/Vector3          | ignition::msgs::Vector3d         |
+| geometry_msgs/Point            | ignition::msgs::Vector3d         |
+| geometry_msgs/Pose             | ignition::msgs::Pose             |
+| geometry_msgs/PoseStamped      | ignition::msgs::Pose             |
+| geometry_msgs/Transform        | ignition::msgs::Pose             |
+| geometry_msgs/TransformStamped | ignition::msgs::Pose             |
+| geometry_msgs/Twist            | ignition::msgs::Twist            |
+| mav_msgs/Actuators ([not on Noetic](https://github.com/ethz-asl/mav_comm/issues/86)) | ignition::msgs::Actuators        |
+| nav_msgs/Odometry              | ignition::msgs::Odometry         |
+| rosgraph_msgs/Clock            | ignition::msgs::Clock            |
+| sensor_msgs/BatteryState       | ignition::msgs::BatteryState     |
+| sensor_msgs/CameraInfo         | ignition::msgs::CameraInfo       |
+| sensor_msgs/FluidPressure      | ignition::msgs::FluidPressure    |
+| sensor_msgs/Imu                | ignition::msgs::IMU              |
+| sensor_msgs/Image              | ignition::msgs::Image            |
+| sensor_msgs/JointState         | ignition::msgs::Model            |
+| sensor_msgs/LaserScan          | ignition::msgs::LaserScan        |
+| sensor_msgs/MagneticField      | ignition::msgs::Magnetometer     |
+| sensor_msgs/PointCloud2        | ignition::msgs::PointCloudPacked |
+| tf_msgs/TFMessage              | ignition::msgs::Pose_V           |
 
-This repository holds packages that provide integration between
-[ROS](http://www.ros.org/) and [Ignition](https://ignitionrobotics.org):
+Run `rosmaster & rosrun ros_ign_bridge parameter_bridge -h` for instructions.
 
-* [ros_ign](https://github.com/osrf/ros_ign/tree/noetic/ros_ign):
-  Metapackage which provides all the other packages.
-* [ros_ign_image](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_image):
-  Unidirectional transport bridge for images from
-  [Ignition Transport](https://ignitionrobotics.org/libs/transport)
-  to ROS using
-  [image_transport](http://wiki.ros.org/image_transport).
-* [ros_ign_bridge](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_bridge):
-  Bidirectional transport bridge between
-  [Ignition Transport](https://ignitionrobotics.org/libs/transport)
-  and ROS.
-* [ros_ign_gazebo](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_gazebo):
-  Convenient launch files and executables for using
-  [Ignition Gazebo](https://ignitionrobotics.org/libs/gazebo)
-  with ROS.
-* [ros_ign_gazebo_demos](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_gazebo_demos):
-  Demos using the ROS-Ignition integration.
-* [ros_ign_point_cloud](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_point_cloud):
-  Plugins for publishing point clouds to ROS from
-  [Ignition Gazebo](https://ignitionrobotics.org/libs/gazebo) simulations.
+## Example 1a: Ignition Transport talker and ROS listener
 
-## Install
+First we start a ROS `roscore`:
 
-This branch supports ROS Noetic. See above for other ROS versions.
+```
+# Shell A:
+. /opt/ros/noetic/setup.bash
+roscore
+```
 
-### ROS
+Then we start the parameter bridge which will watch the specified topics.
 
-Be sure you've installed
-[ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) (at least ROS-Base).
+```
+# Shell B:
+. ~/bridge_ws/install/setup.bash
+rosrun ros_ign_bridge parameter_bridge /chatter@std_msgs/String@ignition.msgs.StringMsg
+```
 
-### Binaries
+Now we start the ROS listener.
 
-Noetic binaries will *soon* be available for Citadel.
-They will be hosted at https://packages.ros.org.
+```
+# Shell C:
+. /opt/ros/noetic/setup.bash
+rostopic echo /chatter
+```
 
-1. Make sure you have ROS Noetic installed.
+Now we start the Ignition Transport talker.
 
-1. Install `ros_ign`
+```
+# Shell D:
+ign topic pub -t /chatter -m ignition.msgs.StringMsg -p 'data:"Hello"'
+```
 
-        sudo apt install ros-noetic-ros-ign
+## Example 1b: ROS talker and Ignition Transport listener
 
-### From source
+First we start a ROS `roscore`:
 
-The following steps are for Linux and OSX.
+```
+# Shell A:
+. /opt/ros/noetic/setup.bash
+roscore
+```
 
-1. Create a catkin workspace:
+Then we start the parameter bridge which will watch the specified topics.
 
-    ```
-    # Setup the workspace
-    mkdir -p ~/ws/src
-    cd ~/ws/src
+```
+# Shell B:
+. ~/bridge_ws/install/setup.bash
+rosrun ros_ign_bridge parameter_bridge /chatter@std_msgs/String@ignition.msgs.StringMsg
+```
 
-    # Download needed software
-    git clone https://github.com/osrf/ros_ign.git -b noetic
-    ```
+Now we start the Ignition Transport listener.
 
-1. Install dependencies (this will also install Ignition):
+```
+# Shell C:
+ign topic -e -t /chatter
+```
 
-    ```
-    cd ~/ws
-    rosdep install --from-paths src -i -y --rosdistro noetic
-    ```
+Now we start the ROS talker.
 
-1. Build the workspace:
+```
+# Shell D:
+. /opt/ros/noetic/setup.bash
+rostopic pub /chatter std_msgs/String "data: 'Hi'" --once
+```
 
-    ```
-    # Source ROS distro's setup.bash
-    source /opt/ros/noetic/setup.bash
+## Example 2: Run the bridge and exchange images
 
-    # Build and install into workspace
-    cd ~/ws/
-    catkin_make install
-    ```
+In this example, we're going to generate Ignition Transport images using Gazebo,
+that will be converted into ROS images, and visualized with `rqt_viewer`.
+
+First we start a ROS `roscore`:
+
+```
+# Shell A:
+. /opt/ros/noetic/setup.bash
+roscore
+```
+
+Then we start Gazebo.
+
+```
+# Shell B:
+gazebo
+```
+
+Once Gazebo is running, click on the `Insert` tab, and then, insert a `Camera`
+object into the scene. Now, let's see the topic where the camera images are
+published.
+
+```
+# Shell C:
+ign topic -l | grep image
+/default/camera/link/camera/image
+```
+
+Then we start the parameter bridge with the previous topic.
+
+```
+# Shell D:
+. ~/bridge_ws/install/setup.bash
+rosrun ros_ign_bridge parameter_bridge /default/camera/link/camera/image@sensor_msgs/Image@ignition.msgs.Image
+```
+
+Now we start the ROS GUI:
+
+```
+# Shell E:
+. /opt/ros/noetic/setup.bash
+rqt_image_view /default/camera/link/camera/image
+```
+
+You should see the current images in `rqt_image_view` which are coming from
+Gazebo (published as Ignition Msgs over Ignition Transport).
+
+The screenshot shows all the shell windows and their expected content
+(it was taken using ROS Kinetic):
+
+![Ignition Transport images and ROS rqt](images/bridge_image_exchange.png)
