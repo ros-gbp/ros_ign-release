@@ -1,97 +1,50 @@
-[![Build Status](https://travis-ci.org/ignitionrobotics/ros_ign.svg?branch=noetic)](https://travis-ci.org/ignitionrobotics/ros_ign/branches)
+# ROS + Ignition Gazebo
 
-* ROS 1 branches:
-    * [melodic](https://github.com/osrf/ros_ign/tree/melodic)
-        * Blueprint and Citadel
-        * Melodic
-    * [noetic](https://github.com/osrf/ros_ign/tree/noetic)
-        * Citadel
-        * Noetic
-* ROS 2 branches:
-    * [dashing](https://github.com/osrf/ros_ign/tree/dashing)
-        * Blueprint and Citadel
-        * Dashing and Eloquent
-    * [ros2](https://github.com/osrf/ros_ign/tree/ros2)
-        * Citadel
-        * Foxy
+This package contains things that make it convenient to integrate ROS with
+Ignition, such as:
 
-# Integration between ROS and Ignition
+* Launch files
+* ROS-enabled executables
 
-## Packages
+# Usage
 
-This repository holds packages that provide integration between
-[ROS](http://www.ros.org/) and [Ignition](https://ignitionrobotics.org):
+> More usage examples can be seen on the
+[ros_ign_gazebo_demos](https://github.com/osrf/ros_ign/tree/melodic/ros_ign_gazebo_demos)
+package.
 
-* [ros_ign](https://github.com/osrf/ros_ign/tree/noetic/ros_ign):
-  Metapackage which provides all the other packages.
-* [ros_ign_image](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_image):
-  Unidirectional transport bridge for images from
-  [Ignition Transport](https://ignitionrobotics.org/libs/transport)
-  to ROS using
-  [image_transport](http://wiki.ros.org/image_transport).
-* [ros_ign_bridge](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_bridge):
-  Bidirectional transport bridge between
-  [Ignition Transport](https://ignitionrobotics.org/libs/transport)
-  and ROS.
-* [ros_ign_gazebo](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_gazebo):
-  Convenient launch files and executables for using
-  [Ignition Gazebo](https://ignitionrobotics.org/libs/gazebo)
-  with ROS.
-* [ros_ign_gazebo_demos](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_gazebo_demos):
-  Demos using the ROS-Ignition integration.
-* [ros_ign_point_cloud](https://github.com/osrf/ros_ign/tree/noetic/ros_ign_point_cloud):
-  Plugins for publishing point clouds to ROS from
-  [Ignition Gazebo](https://ignitionrobotics.org/libs/gazebo) simulations.
+## Run Ignition Gazebo
 
-## Install
+There's a convenient launch file, try for example:
 
-This branch supports ROS Noetic. See above for other ROS versions.
+    roslaunch ros_ign_gazebo ign_gazebo.launch ign_args:="shapes.sdf"
 
-### ROS
+And you can directly call the executable, for example:
 
-Be sure you've installed
-[ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) (at least ROS-Base).
+    roscore
+    rosrun ros_ign_gazebo ign_gazebo shapes.sdf
 
-### Binaries
+![](images/shapes_demo.png)
 
-Noetic binaries will *soon* be available for Citadel.
-They will be hosted at https://packages.ros.org.
+## Spawn entities
 
-1. Make sure you have ROS Noetic installed.
+The `create` executable can be used to spawn SDF or URDF entities from:
 
-1. Install `ros_ign`
+* A file on disk or from Ignition Fuel
+* A ROS parameter
 
-        sudo apt install ros-noetic-ros-ign
+For example, start Ignition Gazebo:
 
-### From source
+`ign gazebo`
 
-The following steps are for Linux and OSX.
 
-1. Create a catkin workspace:
+And a ROS core:
 
-    ```
-    # Setup the workspace
-    mkdir -p ~/ws/src
-    cd ~/ws/src
+`roscore`
 
-    # Download needed software
-    git clone https://github.com/osrf/ros_ign.git -b noetic
-    ```
+Then spawn a model:
 
-1. Install dependencies (this will also install Ignition):
+`rosrun ros_ign_gazebo create -world default -file 'https://fuel.ignitionrobotics.org/1.0/openrobotics/models/Gazebo'`
 
-    ```
-    cd ~/ws
-    rosdep install --from-paths src -i -y --rosdistro noetic
-    ```
+See more options with:
 
-1. Build the workspace:
-
-    ```
-    # Source ROS distro's setup.bash
-    source /opt/ros/noetic/setup.bash
-
-    # Build and install into workspace
-    cd ~/ws/
-    catkin_make install
-    ```
+`rosrun ros_ign_gazebo create --helpshort`
