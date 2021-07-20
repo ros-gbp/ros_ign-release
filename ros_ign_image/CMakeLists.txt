@@ -16,17 +16,36 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   sensor_msgs)
 
-# Default to Citadel, support Blueprint
-if ("$ENV{IGNITION_VERSION}" STREQUAL "blueprint")
-  find_package(ignition-transport7 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport7_VERSION_MAJOR})
+# Fortress
+if ("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
+  find_package(ignition-transport11 REQUIRED)
+  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
 
-  find_package(ignition-msgs4 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs4_VERSION_MAJOR})
+  find_package(ignition-msgs8 REQUIRED)
+  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
 
-  message(STATUS "Compiling against Ignition Blueprint")
+  message(STATUS "Compiling against Ignition Fortress")
+# Edifice
+elseif ("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
+  find_package(ignition-transport10 REQUIRED)
+  set(IGN_TRANSPORT_VER ${ignition-transport10_VERSION_MAJOR})
+
+  find_package(ignition-msgs7 REQUIRED)
+  set(IGN_MSGS_VER ${ignition-msgs7_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Edifice")
+# Dome
+elseif ("$ENV{IGNITION_VERSION}" STREQUAL "dome")
+  find_package(ignition-transport9 REQUIRED)
+  set(IGN_TRANSPORT_VER ${ignition-transport9_VERSION_MAJOR})
+
+  find_package(ignition-msgs6 REQUIRED)
+  set(IGN_MSGS_VER ${ignition-msgs6_VERSION_MAJOR})
+
+  message(STATUS "Compiling against Ignition Dome")
+# Default to Citadel
 else()
-  find_package(ignition-transport8 QUIET)
+  find_package(ignition-transport8 REQUIRED)
   set(IGN_TRANSPORT_VER ${ignition-transport8_VERSION_MAJOR})
 
   find_package(ignition-msgs5 REQUIRED)
