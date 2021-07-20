@@ -60,9 +60,33 @@ TEST(IgnSubscriberTest, Boolean)
 }
 
 /////////////////////////////////////////////////
+TEST(IgnSubscriberTest, Color)
+{
+  MyTestClass<ignition::msgs::Color> client("color");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVar(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
 TEST(IgnSubscriberTest, Empty)
 {
   MyTestClass<ignition::msgs::Empty> client("empty");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVar(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(IgnSubscriberTest, Int32)
+{
+  MyTestClass<ignition::msgs::Int32> client("int32");
 
   using namespace std::chrono_literals;
   ros_ign_bridge::testing::waitUntilBoolVar(
@@ -159,6 +183,18 @@ TEST(IgnSubscriberTest, Point)
 TEST(IgnSubscriberTest, Pose)
 {
   MyTestClass<ignition::msgs::Pose> client("pose");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVar(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(IgnSubscriberTest, Pose_V)
+{
+  MyTestClass<ignition::msgs::Pose_V> client("pose_array");
 
   using namespace std::chrono_literals;
   ros_ign_bridge::testing::waitUntilBoolVar(
@@ -312,6 +348,18 @@ TEST(IgnSubscriberTest, Magnetometer)
 //}
 
 /////////////////////////////////////////////////
+TEST(IgnSubscriberTest, OccupancyGrid)
+{
+  MyTestClass<ignition::msgs::OccupancyGrid> client("map");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVar(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
 TEST(IgnSubscriberTest, Odometry)
 {
   MyTestClass<ignition::msgs::Odometry> client("odometry");
@@ -351,6 +399,30 @@ TEST(IgnSubscriberTest, PointCloudPacked)
 TEST(IgnSubscriberTest, BatteryState)
 {
   MyTestClass<ignition::msgs::BatteryState> client("battery_state");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVar(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(IgnSubscriberTest, Marker)
+{
+  MyTestClass<ignition::msgs::Marker> client("marker");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVar(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(IgnSubscriberTest, MarkerArray)
+{
+  MyTestClass<ignition::msgs::Marker_V> client("marker_array");
 
   using namespace std::chrono_literals;
   ros_ign_bridge::testing::waitUntilBoolVar(
