@@ -1,119 +1,138 @@
-[![Build Status](https://github.com/ignitionrobotics/ros_ign/actions/workflows/noetic-ci.yml/badge.svg?branch=noetic)](https://github.com/ignitionrobotics/ros_ign/actions/workflows/noetic-ci.yml)
+# ROS + Ignition Gazebo demos
 
-ROS version | Ignition version | Branch | Binaries hosted at
--- | -- | -- | --
-Melodic | Citadel | [melodic](https://github.com/osrf/ros_ign/tree/melodic) | only from source
-Melodic | Dome | [melodic](https://github.com/osrf/ros_ign/tree/melodic) | https://packages.osrfoundation.org
-Noetic | Citadel | [noetic](https://github.com/osrf/ros_ign/tree/noetic) | https://packages.ros.org
-Noetic | Dome | [noetic](https://github.com/osrf/ros_ign/tree/noetic) | only from source
-Noetic | Edifice | [noetic](https://github.com/osrf/ros_ign/tree/noetic) | only from source
-Noetic | Fortress (not released) | [noetic](https://github.com/osrf/ros_ign/tree/noetic) | only from source
-Foxy | Citadel | [foxy](https://github.com/osrf/ros_ign/tree/foxy) | https://packages.ros.org
-Foxy | Dome | [foxy](https://github.com/osrf/ros_ign/tree/foxy) | only from source
-Foxy | Edifice | [foxy](https://github.com/osrf/ros_ign/tree/foxy) | only from source
-Galactic | Edifice | [ros2](https://github.com/osrf/ros_ign/tree/ros2) | https://packages.ros.org
-Rolling | Edifice | [ros2](https://github.com/osrf/ros_ign/tree/ros2) | https://packages.ros.org
-Rolling | Fortress (not released) | [ros2](https://github.com/osrf/ros_ign/tree/ros2) | only from source
+This package contains demos showing how to use Ignition Gazebo with ROS.
 
-> Please [ticket an issue](https://github.com/ignitionrobotics/ros_ign/issues/) if you'd like support to be added for some combination.
+## Air pressure
 
-# Integration between ROS and Ignition
+Publishes fluid pressure readings.
 
-## Packages
+    roslaunch ros_ign_gazebo_demos air_pressure.launch
 
-This repository holds packages that provide integration between
-[ROS](http://www.ros.org/) and [Ignition](https://ignitionrobotics.org):
+![](images/air_pressure_demo.png)
 
-* [ros_ign](https://github.com/ignitionrobotics/ros_ign/tree/noetic/ros_ign):
-  Metapackage which provides all the other packages.
-* [ros_ign_image](https://github.com/ignitionrobotics/ros_ign/tree/noetic/ros_ign_image):
-  Unidirectional transport bridge for images from
-  [Ignition Transport](https://ignitionrobotics.org/libs/transport)
-  to ROS using
-  [image_transport](http://wiki.ros.org/image_transport).
-* [ros_ign_bridge](https://github.com/ignitionrobotics/ros_ign/tree/noetic/ros_ign_bridge):
-  Bidirectional transport bridge between
-  [Ignition Transport](https://ignitionrobotics.org/libs/transport)
-  and ROS.
-* [ros_ign_gazebo](https://github.com/ignitionrobotics/ros_ign/tree/noetic/ros_ign_gazebo):
-  Convenient launch files and executables for using
-  [Ignition Gazebo](https://ignitionrobotics.org/libs/gazebo)
-  with ROS.
-* [ros_ign_gazebo_demos](https://github.com/ignitionrobotics/ros_ign/tree/noetic/ros_ign_gazebo_demos):
-  Demos using the ROS-Ignition integration.
-* [ros_ign_point_cloud](https://github.com/ignitionrobotics/ros_ign/tree/noetic/ros_ign_point_cloud):
-  Plugins for publishing point clouds to ROS from
-  [Ignition Gazebo](https://ignitionrobotics.org/libs/gazebo) simulations.
+## Camera
 
-## Install
+Publishes RGB camera image and info.
 
-This branch supports ROS Noetic. See above for other ROS versions.
+Images can be exposed to ROS through `ros_ign_bridge` or `ros_ign_image`.
 
-### Binaries
+Using the image bridge (unidirectional, uses [image_transport](http://wiki.ros.org/image_transport)):
 
-Noetic binaries are only available for Citadel.
-They are hosted at https://packages.ros.org.
+    roslaunch ros_ign_gazebo_demos image_bridge.launch
 
-1. Add https://packages.ros.org
+Using the regular bridge:
 
-        sudo sh -c 'echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list'
-        sudo apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654
-        sudo apt-get update
+    roslaunch ros_ign_gazebo_demos camera.launch
 
-1. Install `ros_ign`
+![](images/camera_demo.png)
 
-        sudo apt install ros-noetic-ros-ign
+## Diff drive
 
-### From source
+Send commands to a differential drive vehicle and listen to its odometry.
 
-#### ROS
+    roslaunch ros_ign_gazebo_demos diff_drive.launch
 
-Be sure you've installed
-[ROS Noetic](http://wiki.ros.org/noetic/Installation/Ubuntu) (at least ROS-Base).
-More ROS dependencies will be installed below.
+Then send a command
 
-#### Ignition
+    rostopic pub /model/vehicle_blue/cmd_vel geometry_msgs/Twist "{linear: {x: 5.0}, angular: {z: 0.5}}"
 
-Install either [Citadel, Dome, Edifice or Fortress](https://ignitionrobotics.org/docs).
+![](images/diff_drive_demo.png)
 
-Set the `IGNITION_VERSION` environment variable to the Ignition version you'd
-like to compile against. For example:
+## Depth camera
 
-    export IGNITION_VERSION=citadel
+Depth camera data can be obtained as:
 
-> You only need to set this variable when compiling, not when running.
+* `sensor_msgs/Image`, through `ros_ign_bridge` or `ros_ign_image`
+* `sensor_msgs/PointCloud2`, through `ros_ign_bridge` or `ros_ign_point_cloud` (See issue #40)
 
-#### Compile ros_ign
+Using the image bridge (unidirectional, uses [image_transport](http://wiki.ros.org/image_transport)):
 
-The following steps are for Linux and OSX.
+    roslaunch ros_ign_gazebo_demos image_bridge.launch
 
-1. Create a catkin workspace:
+Using the bridge:
 
-    ```
-    # Setup the workspace
-    mkdir -p ~/ws/src
-    cd ~/ws/src
+    roslaunch ros_ign_gazebo_demos depth_camera_bridge.launch
 
-    # Download needed software
-    git clone https://github.com/osrf/ros_ign.git -b noetic
-    ```
+Using Ignition Gazebo plugin:
 
-1. Install dependencies (this may also install Ignition):
+    roslaunch ros_ign_gazebo_demos depth_camera.launch
 
-    ```
-    cd ~/ws
-    rosdep install -r --from-paths src -i -y --rosdistro noetic
-    ```
+![](images/depth_camera_demo.png)
 
-    > If `rosdep` fails to install Ignition libraries and you have not installed them before, please follow [Ignition installation instructions](https://ignitionrobotics.org/docs/latest/install).
+## GPU lidar
 
-1. Build the workspace:
+GPU lidar data can be obtained as:
 
-    ```
-    # Source ROS distro's setup.bash
-    source /opt/ros/noetic/setup.bash
+* `sensor_msgs/LaserScan`, through `ros_ign_bridge`
+* `sensor_msgs/PointCloud2`, through `ros_ign_bridge` or `ros_ign_point_cloud` (See issue #40)
 
-    # Build and install into workspace
-    cd ~/ws/
-    catkin_make install
-    ```
+Using the bridge:
+
+    roslaunch ros_ign_gazebo_demos gpu_lidar_bridge.launch
+
+Using Ignition Gazebo plugin:
+
+    roslaunch ros_ign_gazebo_demos gpu_lidar.launch
+
+![](images/gpu_lidar_demo.png)
+
+## IMU
+
+Publishes IMU readings.
+
+    roslaunch ros_ign_gazebo_demos imu.launch
+
+![](images/imu_demo.png)
+
+## Magnetometer
+
+Publishes magnetic field readings.
+
+    roslaunch ros_ign_gazebo_demos magnetometer.launch
+
+![](images/magnetometer_demo.png)
+
+## RGBD camera
+
+RGBD camera data can be obtained as:
+
+* `sensor_msgs/Image`, through `ros_ign_bridge` or `ros_ign_image`
+* `sensor_msgs/PointCloud2`, through `ros_ign_bridge` or `ros_ign_point_cloud` (See issue #40)
+
+Using the image bridge (unidirectional, uses [image_transport](http://wiki.ros.org/image_transport)):
+
+    roslaunch ros_ign_gazebo_demos image_bridge.launch
+
+Using the regular bridge:
+
+    roslaunch ros_ign_gazebo_demos rgbd_camera_bridge.launch
+
+Using Ignition Gazebo plugin:
+
+    roslaunch ros_ign_gazebo_demos rgbd_camera.launch
+
+![](images/rgbd_camera_demo.png)
+
+## Battery
+
+Get the current state of a battery.
+
+    roslaunch ros_ign_gazebo_demos battery.launch
+
+Then send a command so the vehicle moves and drains the battery
+
+    rostopic pub /model/vehicle_blue/cmd_vel geometry_msgs/Twist "{linear: {x: 5.0}, angular: {z: 0.5}}"
+
+![](images/battery_demo.png)
+
+## Create entity
+
+Launch simulation and spawn entities:
+
+* Sphere from URDF loaded into ROS param
+* Box from SDF file on Ignition Fuel
+* Cylinder from SDF file
+
+`roslaunch ros_ign_gazebo_demos create.launch`
+
+![](images/create.png)
