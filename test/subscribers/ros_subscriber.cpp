@@ -18,12 +18,15 @@
 #include <gtest/gtest.h>
 #include <ros/ros.h>
 #include <std_msgs/Bool.h>
+#include <std_msgs/ColorRGBA.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float64.h>
 #include <std_msgs/Header.h>
+#include <std_msgs/Int32.h>
 #include <std_msgs/String.h>
 #include <geometry_msgs/Point.h>
 #include <geometry_msgs/Pose.h>
+#include <geometry_msgs/PoseArray.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Transform.h>
 #include <geometry_msgs/TransformStamped.h>
@@ -31,6 +34,7 @@
 #include <geometry_msgs/Quaternion.h>
 #include <geometry_msgs/Vector3.h>
 // #include <mav_msgs/Actuators.h>
+#include <nav_msgs/OccupancyGrid.h>
 #include <nav_msgs/Odometry.h>
 #include <rosgraph_msgs/Clock.h>
 #include <sensor_msgs/BatteryState.h>
@@ -41,6 +45,8 @@
 #include <sensor_msgs/LaserScan.h>
 #include <sensor_msgs/MagneticField.h>
 #include <sensor_msgs/PointCloud2.h>
+#include <visualization_msgs/Marker.h>
+#include <visualization_msgs/MarkerArray.h>
 #include <tf2_msgs/TFMessage.h>
 #include <chrono>
 #include "../test_utils.h"
@@ -86,9 +92,33 @@ TEST(ROSSubscriberTest, Bool)
 }
 
 /////////////////////////////////////////////////
+TEST(ROSSubscriberTest, ColorRGBA)
+{
+  MyTestClass<std_msgs::ColorRGBA> client("color");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
 TEST(ROSSubscriberTest, Empty)
 {
   MyTestClass<std_msgs::Empty> client("empty");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(ROSSubscriberTest, Int32)
+{
+  MyTestClass<std_msgs::Int32> client("int32");
 
   using namespace std::chrono_literals;
   ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
@@ -197,6 +227,18 @@ TEST(ROSSubscriberTest, Point)
 TEST(ROSSubscriberTest, Pose)
 {
   MyTestClass<geometry_msgs::Pose> client("pose");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(ROSSubscriberTest, PoseArray)
+{
+  MyTestClass<geometry_msgs::PoseArray> client("pose_array");
 
   using namespace std::chrono_literals;
   ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
@@ -362,6 +404,18 @@ TEST(ROSSubscriberTest, MagneticField)
 // }
 
 /////////////////////////////////////////////////
+TEST(ROSSubscriberTest, OccupancyGrid)
+{
+  MyTestClass<nav_msgs::OccupancyGrid> client("map");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
 TEST(ROSSubscriberTest, Odometry)
 {
   MyTestClass<nav_msgs::Odometry> client("odometry");
@@ -389,6 +443,30 @@ TEST(ROSSubscriberTest, PointCloud2)
 TEST(ROSSubscriberTest, BatteryState)
 {
   MyTestClass<sensor_msgs::BatteryState> client("battery_state");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(ROSSubscriberTest, Marker)
+{
+  MyTestClass<visualization_msgs::Marker> client("marker");
+
+  using namespace std::chrono_literals;
+  ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
+    client.callbackExecuted, 10ms, 200);
+
+  EXPECT_TRUE(client.callbackExecuted);
+}
+
+/////////////////////////////////////////////////
+TEST(ROSSubscriberTest, MarkerArray)
+{
+  MyTestClass<visualization_msgs::MarkerArray> client("marker_array");
 
   using namespace std::chrono_literals;
   ros_ign_bridge::testing::waitUntilBoolVarAndSpin(
