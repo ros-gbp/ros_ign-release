@@ -1,0 +1,13 @@
+Source: ros-noetic-ros-ign-image
+Section: misc
+Priority: optional
+Maintainer: Louise Poubel <louise@openrobotics.org>
+Build-Depends: debhelper (>= 9.0.0), libignition-msgs5-dev, libignition-transport8-dev, ros-noetic-catkin, ros-noetic-image-transport, ros-noetic-ros-ign-bridge, ros-noetic-roscpp, ros-noetic-rostest, ros-noetic-sensor-msgs
+Homepage: 
+Standards-Version: 3.9.2
+
+Package: ros-noetic-ros-ign-image
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libignition-msgs5-dev, libignition-transport8-dev, ros-noetic-image-transport, ros-noetic-ros-ign-bridge, ros-noetic-roscpp, ros-noetic-sensor-msgs
+Replaces: ros-noetic-ros1-ign-image
+Description: Image utilities for Ignition simulation with ROS.
