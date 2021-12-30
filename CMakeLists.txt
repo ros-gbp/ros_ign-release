@@ -38,15 +38,6 @@ elseif ("$ENV{IGNITION_VERSION}" STREQUAL "edifice")
   set(IGN_MSGS_VER ${ignition-msgs7_VERSION_MAJOR})
 
   message(STATUS "Compiling against Ignition Edifice")
-# Dome
-elseif ("$ENV{IGNITION_VERSION}" STREQUAL "dome")
-  find_package(ignition-transport9 REQUIRED)
-  set(IGN_TRANSPORT_VER ${ignition-transport9_VERSION_MAJOR})
-
-  find_package(ignition-msgs6 REQUIRED)
-  set(IGN_MSGS_VER ${ignition-msgs6_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Dome")
 # Default to Citadel
 else()
   find_package(ignition-transport8 REQUIRED)
@@ -56,6 +47,7 @@ else()
   set(IGN_MSGS_VER ${ignition-msgs5_VERSION_MAJOR})
 
   message(STATUS "Compiling against Ignition Citadel")
+  add_definitions(-DIGNITION_CITADEL)
 endif()
 
 catkin_package()
@@ -66,26 +58,6 @@ set(common_sources
   src/convert.cpp
   src/factories.cpp
 )
-
-set(bridge_executables
-  parameter_bridge
-  static_bridge
-)
-
-foreach(bridge ${bridge_executables})
-  add_executable(${bridge}
-    src/${bridge}.cpp
-    ${common_sources}
-  )
-  target_link_libraries(${bridge}
-    ${catkin_LIBRARIES}
-    ignition-msgs${IGN_MSGS_VER}::core
-    ignition-transport${IGN_TRANSPORT_VER}::core
-  )
-  install(TARGETS ${bridge}
-          DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-  )
-endforeach(bridge)
 
 set(bridge_lib
   ros_ign_bridge_lib
@@ -99,6 +71,23 @@ target_link_libraries(${bridge_lib}
   ignition-msgs${IGN_MSGS_VER}::core
   ignition-transport${IGN_TRANSPORT_VER}::core
 )
+
+set(bridge_executables
+  parameter_bridge
+  static_bridge
+)
+
+foreach(bridge ${bridge_executables})
+  add_executable(${bridge}
+    src/${bridge}.cpp
+  )
+  target_link_libraries(${bridge}
+    ${bridge_lib}
+  )
+  install(TARGETS ${bridge}
+          DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  )
+endforeach(bridge)
 
 catkin_package(INCLUDE_DIRS include
                LIBRARIES ${bridge_lib})
